@@ -5,6 +5,7 @@ ROOT="$(cd "$(dirname "$0")/.." && pwd)"
 APP="$ROOT/payments-service-demo"
 RULES="$ROOT/lightwell-rules"
 REPORT="$ROOT/report"
+CUSTOM_RECIPES_DIR="$ROOT/custom-recipes"
 REWRITE_PLUGIN_VERSION="${REWRITE_PLUGIN_VERSION:-6.45.0}"
 DEMO_MODE="${DEMO_MODE:-strict}" # strict | demo-fallback
 
@@ -93,12 +94,19 @@ else
 fi
 
 echo "[step 2/2] OpenRewrite remediation (applies code changes)"
+echo "Building custom AST recipe JAR..."
+mvn -q \
+  -f "$CUSTOM_RECIPES_DIR/pom.xml" \
+  -Dmaven.repo.local="$ROOT/.m2/repository" \
+  -DskipTests \
+  install
+
 echo "mvn -Dmaven.repo.local \"$ROOT/.m2/repository\" -Drewrite.configLocation=\"$RULES/rewrite.yml\" -Drewrite.activeRecipes=com.redhat.lightwell.ApplyLightwellRemediationDemo org.openrewrite.maven:rewrite-maven-plugin:$REWRITE_PLUGIN_VERSION:run"
 mvn \
   -Dmaven.repo.local="$ROOT/.m2/repository" \
   -Drewrite.configLocation="$RULES/rewrite.yml" \
   -Drewrite.activeRecipes="com.redhat.lightwell.ApplyLightwellRemediationDemo" \
-  -Drewrite.recipeArtifactCoordinates="org.openrewrite:rewrite-java:8.64.0,org.openrewrite:rewrite-maven:8.64.0" \
+  -Drewrite.recipeArtifactCoordinates="org.openrewrite:rewrite-java:8.64.0,org.openrewrite:rewrite-maven:8.64.0,com.redhat.lightwell:custom-recipes:1.0.0-SNAPSHOT" \
   "org.openrewrite.maven:rewrite-maven-plugin:$REWRITE_PLUGIN_VERSION:run"
 
 echo

@@ -10,6 +10,7 @@ if [ -d .git ]; then
   git reset --hard HEAD
   git clean -fd
 fi
+rm -rf target
 
 rm -rf "$REPORT"
 mkdir -p "$REPORT"

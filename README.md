@@ -15,7 +15,7 @@ Then open `report/static-report/index.html` and review the printed `git diff`.
 ## What this demo proves
 
 1. MTA can apply a Lightwell-style remediated dependency version in `pom.xml`.
-2. OpenRewrite can apply automated source and pom transformations to produce reviewable upgrade diffs.
+2. OpenRewrite applies an AST-aware custom Java recipe for call-site modernization, plus automated `pom.xml` remediation updates.
 3. The full result is visible as a clean `git diff`.
 
 ## Repo layout
@@ -23,6 +23,7 @@ Then open `report/static-report/index.html` and review the printed `git diff`.
 - `payments-service-demo/` — minimal Java app used as the target.
 - `lightwell-rules/rewrite.yml` — OpenRewrite recipe definitions.
 - `lightwell-rules/lightwell-demo.mta.yaml` — MTA custom rule referencing the recipe.
+- `custom-recipes/` — custom AST-aware OpenRewrite Java recipe module and tests.
 - `scripts/run-demo.sh` — end-to-end helper script with strict and demo-fallback modes.
 - `scripts/run-openrewrite-fallback.sh` — direct OpenRewrite fallback path (legacy helper).
 - `docs/EXPECTED-DIFF.md` — golden diff to show if tooling setup blocks live execution.
@@ -52,6 +53,14 @@ DEMO_MODE=demo-fallback ./scripts/run-demo.sh
    - post-remediation compile verification result
    - resulting `git diff`
 
+### Optional: validate custom recipe tests
+
+Run this once to validate the AST recipe scenarios directly:
+
+```bash
+mvn -f custom-recipes/pom.xml test
+```
+
 ## New Contributor Setup
 
 Use this if you are cloning the repo for the first time.
@@ -68,6 +77,7 @@ cd mta-openwire-demo
    - Maven
    - Git
    - `mta-cli` (recommended for the detection step)
+   - Network access to Maven Central for first-time dependency resolution
 
 3. Verify local tools:
 
@@ -114,11 +124,13 @@ DEMO_MODE=demo-fallback ./scripts/run-demo.sh
 
 - Step 1 runs `mta-cli analyze` and generates `report/static-report/index.html`.
 - Step 2 runs OpenRewrite and updates files in `payments-service-demo/`.
+- Step 2 builds and runs a custom AST-aware OpenRewrite Java recipe from `custom-recipes/`.
+- `run-demo.sh` installs the custom recipe with `-DskipTests` for faster demo execution; run `mvn -f custom-recipes/pom.xml test` separately for recipe test validation.
 - The script prints `git diff` so you can review exact changes.
 - If you do not have access to Lightwell repositories, strict mode may fail compile verification after the version bump; fallback mode continues for demo purposes.
 
 ## Notes for narration
 
 - The dependency bump to `2.11.0.rhlw-00001` is shown as an automated remediation action.
-- The Java change to include `StandardCharsets.UTF_8` is shown as an automated source transformation.
+- The Java change to include `StandardCharsets.UTF_8` is performed by a custom AST-aware recipe (`com.redhat.lightwell.openrewrite.AddExplicitCharsetToFileUtilsRead`).
 - This avoids over-claiming that the method signature change is strictly required by `commons-io:2.11.0`.
