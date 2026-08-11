@@ -1,0 +1,14 @@
+- ruleID: lightwell-demo-openrewrite-remediation
+  description: >
+    Detects demo project and flags it for Lightwell/OpenRewrite remediation.
+  effort: 1
+  category: mandatory
+  labels:
+  - konveyor.io/source=java
+  - konveyor.io/target=java
+  when:
+    builtin.file:
+      pattern: "pom.xml"
+  message: >
+    Demo remediation candidate detected. Run the OpenRewrite demo recipe
+    com.redhat.lightwell.ApplyLightwellRemediationDemo.

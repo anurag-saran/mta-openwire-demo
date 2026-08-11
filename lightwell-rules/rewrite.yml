@@ -1,0 +1,41 @@
+type: specs.openrewrite.org/v1beta/recipe
+name: com.redhat.lightwell.ApplyLightwellRemediationDemo
+displayName: Apply Lightwell remediations demo
+description: >
+  Demo recipe: move commons-io to a Lightwell remediated version and modernize
+  FileUtils read call to include an explicit charset.
+recipeList:
+  - org.openrewrite.maven.UpgradeDependencyVersion:
+      groupId: commons-io
+      artifactId: commons-io
+      newVersion: 2.11.0.rhlw-00001
+      overrideManagedVersion: true
+  # Fallback textual replacement in case the remediated repo is unreachable
+  # during the live demo environment.
+  - org.openrewrite.text.FindAndReplace:
+      find: "<version>2.11.0</version>"
+      replace: "<version>2.11.0.rhlw-00001</version>"
+      regex: false
+      caseSensitive: true
+      multiline: false
+      dotAll: false
+      filePattern: "pom.xml"
+      plaintextOnly: false
+  - org.openrewrite.text.FindAndReplace:
+      find: "import java.io.File;"
+      replace: "import java.io.File;\nimport java.nio.charset.StandardCharsets;"
+      regex: false
+      caseSensitive: true
+      multiline: false
+      dotAll: false
+      filePattern: "src/main/java/**/*.java"
+      plaintextOnly: false
+  - org.openrewrite.text.FindAndReplace:
+      find: "FileUtils.readFileToString(reportFile);"
+      replace: "FileUtils.readFileToString(reportFile, StandardCharsets.UTF_8);"
+      regex: false
+      caseSensitive: true
+      multiline: false
+      dotAll: false
+      filePattern: "src/main/java/**/*.java"
+      plaintextOnly: false

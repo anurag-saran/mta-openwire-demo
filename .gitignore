@@ -1,0 +1,10 @@
+.DS_Store
+
+# Local tooling and caches
+.tools/
+.m2/
+report/
+
+# Demo app local git state and build output
+payments-service-demo/.git/
+payments-service-demo/target/
