@@ -2,14 +2,35 @@
 
 Use this as a visual fallback if tooling setup is flaky during the call.
 
-## 1) `pom.xml` dependency version changes
+`RECIPE_SOURCE=local` and `RECIPE_SOURCE=maven` produce the **same** file diffs; only the recipe delivery mechanism differs.
+
+## Pom-only scope (`DEMO_SCOPE=pom-only`)
+
+Only `payments-service-demo/pom.xml` changes:
 
 ```diff
 -            <version>2.11.0</version>
 +            <version>2.11.0.rhlw-00001</version>
 ```
 
-## 2) Java callsite modernized with explicit charset
+Narration line:
+
+"This proves automated dependency remediation in `pom.xml` — the commons-io coordinate moves to the Lightwell remediated version without manual editing."
+
+Maven recipe-source narration:
+
+"Same remediation outcome, but the OpenRewrite recipes were loaded from a Maven recipes artifact (`lightwell-openrewrite-recipes`) instead of a checked-in rewrite.yml."
+
+## Full scope (`DEMO_SCOPE=full`, default)
+
+### 1) `pom.xml` dependency version changes
+
+```diff
+-            <version>2.11.0</version>
++            <version>2.11.0.rhlw-00001</version>
+```
+
+### 2) Java callsite modernized with explicit charset
 
 `payments-service-demo/src/main/java/com/payments/service/PaymentReportService.java`
 
@@ -28,6 +49,6 @@ Use this as a visual fallback if tooling setup is flaky during the call.
  }
 ```
 
-## 3) Narration line
+### 3) Narration line
 
 "This proves two automation layers: dependency remediation in `pom.xml` and AST-safe source rewrite (import + invocation argument), all generated without manual editing."

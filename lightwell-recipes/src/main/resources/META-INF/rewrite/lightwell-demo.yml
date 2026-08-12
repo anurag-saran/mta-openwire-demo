@@ -1,5 +1,4 @@
-# Keep in sync with lightwell-recipes/src/main/resources/META-INF/rewrite/lightwell-demo.yml
-# (Maven RECIPE_SOURCE path).
+# Keep in sync with lightwell-rules/rewrite.yml (local RECIPE_SOURCE path).
 type: specs.openrewrite.org/v1beta/recipe
 name: com.redhat.lightwell.ApplyLightwellRemediationDemo
 displayName: Apply Lightwell remediations demo
